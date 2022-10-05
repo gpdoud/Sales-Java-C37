@@ -1,4 +1,4 @@
-package com.bootcamp.capstone.tutorial.sales.item.orderline;
+package com.bootcamp.capstone.tutorial.sales.orderline;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ public class OrderlinesController {
 	private ItemRepository itemRepo;
 	
 	@SuppressWarnings("rawtypes")
-	private ResponseEntity recalcRequestTotal(int orderId) {
+	private ResponseEntity recalcOrderTotal(int orderId) {
 		var ordOpt = ordRepo.findById(orderId);
 		if(ordOpt.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -30,8 +30,8 @@ public class OrderlinesController {
 		var orderTotal = 0;
 		Iterable<Orderline> orderlines = ordlRepo.findByOrderId(order.getId());
 		for(var orderline : orderlines) {
-			var item = itemRepo.findById(orderline.getItem().getId());
-			orderline.setItem(item.get());
+			//var item = itemRepo.findById(orderline.getItem().getId());
+			//orderline.setItem(item.get());
 			orderTotal += orderline.getItem().getPrice() * orderline.getQuantity();
 		}
 		order.setTotal(orderTotal);
@@ -60,7 +60,8 @@ public class OrderlinesController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		var ordl = ordlRepo.save(orderline);
-		var respEntity = this.recalcRequestTotal(ordl.getOrder().getId());
+		ordl = ordlRepo.findById(ordl.getId()).get();
+		var respEntity = this.recalcOrderTotal(ordl.getOrder().getId());
 		if(respEntity.getStatusCode() != HttpStatus.OK) {
 			throw new Exception("Recalculate request total failed!");
 		}
@@ -78,7 +79,7 @@ public class OrderlinesController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		ordlRepo.save(orderline);
-		var respEntity = this.recalcRequestTotal(orderline.getOrder().getId());
+		var respEntity = this.recalcOrderTotal(orderline.getOrder().getId());
 		if(respEntity.getStatusCode() != HttpStatus.OK) {
 			throw new Exception("Recalculate request total failed!");
 		}
@@ -87,14 +88,14 @@ public class OrderlinesController {
 	
 	@SuppressWarnings("rawtypes")
 	@DeleteMapping("{id}")
-	public ResponseEntity deleteRequestline(@PathVariable int id) throws Exception {
-		var requestOpt = ordlRepo.findById(id);
-		if(requestOpt.isEmpty()) {
+	public ResponseEntity deleteOrderline(@PathVariable int id) throws Exception {
+		var ordlOpt = ordlRepo.findById(id);
+		if(ordlOpt.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		var request = requestOpt.get();
-		ordlRepo.delete(request);
-		var respEntity = this.recalcRequestTotal(request.getId());
+		var orderline = ordlOpt.get();
+		ordlRepo.delete(orderline);
+		var respEntity = this.recalcOrderTotal(orderline.getId());
 		if(respEntity.getStatusCode() != HttpStatus.OK) {
 			throw new Exception("Recalculate request total failed!");
 		}

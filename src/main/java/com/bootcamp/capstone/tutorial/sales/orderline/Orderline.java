@@ -1,4 +1,4 @@
-package com.bootcamp.capstone.tutorial.sales.item.orderline;
+package com.bootcamp.capstone.tutorial.sales.orderline;
 
 import javax.persistence.*;
 

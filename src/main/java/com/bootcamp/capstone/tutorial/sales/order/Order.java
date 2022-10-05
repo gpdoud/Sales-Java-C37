@@ -5,7 +5,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import com.bootcamp.capstone.tutorial.sales.customer.Customer;
-import com.bootcamp.capstone.tutorial.sales.item.orderline.Orderline;
+import com.bootcamp.capstone.tutorial.sales.orderline.Orderline;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
